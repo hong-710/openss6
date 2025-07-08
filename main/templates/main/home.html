@@ -1,0 +1,80 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <title>Sentiment Analysis of YouTube Comments</title>
+    <link href="https://fonts.googleapis.com/css2?family=Hahmlet:wght@300&display=swap" rel="stylesheet">
+    <link href="{% static 'style.css' %}" rel="stylesheet">
+</head>
+<body>
+
+    <!-- ✅ 상단 메뉴바 -->
+    <div class="header">
+        <ul class="nav">
+            <li><a href="#top">HOME</a></li>
+            <li><a href="#link_section">LINK</a></li>
+            <li><a href="#graph_section">GRAPH</a></li>
+            <li><a href="#keyword_section">KEYWORD</a></li>
+        </ul>
+    </div>
+
+    <!-- ✅ HOME 섹션 -->
+    <div id="home_section" class="intro_bg">
+        <div class="intro_text">
+            <h1>ANALYZING YOUR YOUTUBE COMMENTS</h1>
+        </div>
+    </div>
+
+    <!-- ✅ LINK 섹션 -->
+    <div id="link_section" class="link_input_row">
+        <h2 class="contents1">INSERT LINK</h2>
+        <div class="searchArea">
+            <form method="POST" action="{% url 'analyze' %}">
+                {% csrf_token %}
+                <input type="search" name="video_url" placeholder="YouTube URL">
+                <button type="submit">📺</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ✅ 결과 출력 섹션 -->
+    <div id="graph_section">
+        <h3 style="margin: 30px 50px 10px;">📊 분석 결과</h3>
+        <div id="analysis_result" style="min-height: 200px; padding: 20px;"></div>
+    </div>
+
+    <!-- ✅ 키워드 섹션 -->
+    <div id="keyword_section" style="margin: 50px auto; text-align: center;">
+        <p>키워드 분석 결과 (향후 추가 가능)</p>
+    </div>
+
+    <!-- ✅ AJAX 스크립트 -->
+    <script>
+        const form = document.querySelector('form');
+        form.addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const input = form.querySelector('input[name="video_url"]').value;
+
+            fetch("{% url 'analyze' %}", {
+                method: "POST",
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: new URLSearchParams({ 'video_url': input })
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('analysis_result').innerHTML = `
+                    <pre style="background:#f4f4f4;padding:20px;border-radius:10px;">${data.output}</pre>
+                    <img src="{% static 'img/result.png' %}" style="max-width: 600px; margin-top: 20px;" alt="시각화 결과">
+                `;
+            })
+            .catch(error => {
+                console.error('분석 중 오류:', error);
+            });
+        });
+    </script>
+</body>
+</html>
