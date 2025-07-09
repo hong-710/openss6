@@ -2,13 +2,13 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <title>Sentiment Analysis of YouTube Comments</title>
+    <title>Analysing YouTube Comments</title>
     <link href="https://fonts.googleapis.com/css2?family=Hahmlet:wght@300&display=swap" rel="stylesheet">
     <link href="{% static 'style.css' %}" rel="stylesheet">
 </head>
 <body>
 
-    <!-- ✅ 상단 메뉴바 -->
+    <!--메뉴바 -->
     <div class="header">
         <ul class="nav">
             <li><a href="#top">HOME</a></li>
@@ -18,14 +18,14 @@
         </ul>
     </div>
 
-    <!-- ✅ HOME 섹션 -->
+    <!--HOME 섹션 -->
     <div id="home_section" class="intro_bg">
         <div class="intro_text">
             <h1>ANALYZING YOUR YOUTUBE COMMENTS</h1>
         </div>
     </div>
 
-    <!-- ✅ LINK 섹션 -->
+    <!--LINK 섹션 -->
     <div id="link_section" class="link_input_row">
         <h2 class="contents1">INSERT LINK</h2>
         <div class="searchArea">
@@ -37,18 +37,19 @@
         </div>
     </div>
 
-    <!-- ✅ 결과 출력 섹션 -->
-    <div id="graph_section">
-        <h3 style="margin: 30px 50px 10px;">📊 분석 결과</h3>
-        <div id="analysis_result" style="min-height: 200px; padding: 20px;"></div>
+    <!-- 분석 결과 섹션 -->
+    <div id="graph_section" class="section_box">
+        <h2 style="margin: 20px 5px 10px;">분석 결과</h2>
+        <div id="analysis_result" style="min-height: 200px; padding: 50px;"></div>
     </div>
 
-    <!-- ✅ 키워드 섹션 -->
-    <div id="keyword_section" style="margin: 50px auto; text-align: center;">
-        <p>키워드 분석 결과 (향후 추가 가능)</p>
+    <!-- 키워드 분석 섹션 -->
+    <div id="keyword_section" class="section_box">
+        <h2 style="margin: 20px 5px 10px;">키워드 분석 결과</h2>
+        <div id="keyword_result" style="min-height: 200px; padding: 50px;"></div>
     </div>
 
-    <!-- ✅ AJAX 스크립트 -->
+    <!--AJAX 스크립트 --> 
     <script>
         const form = document.querySelector('form');
         form.addEventListener('submit', function(event) {
@@ -68,7 +69,11 @@
             .then(data => {
                 document.getElementById('analysis_result').innerHTML = `
                     <pre style="background:#f4f4f4;padding:20px;border-radius:10px;">${data.output}</pre>
-                    <img src="{% static 'img/result.png' %}" style="max-width: 600px; margin-top: 20px;" alt="시각화 결과">
+                    <img src="${data.result_img}" style="max-width: 600px; margin: 10px;" alt="파이차트">
+                    <img src="${data.timeseries_img}" style="max-width: 600px; margin: 10px;" alt="선그래프">
+                `;
+                document.getElementById('keyword_result').innerHTML = `
+                    <img src="${data.wordcloud_img}" style="max-width: 600px; margin: 10px;" alt="워드클라우드">
                 `;
             })
             .catch(error => {

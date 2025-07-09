@@ -1,22 +1,23 @@
-from django.shortcuts import render
 from django.http import JsonResponse
-import subprocess
+from django.views.decorators.csrf import csrf_exempt
+from .youtube import run_analysis  # ✅ run_analysis 함수 가져오기
+from django.shortcuts import render
 
-def home(request):
-    return render(request, 'main/home.html')  # 위의 템플릿 이름과 일치
+def index(request):
+    return render(request, 'main/home.html')
 
+@csrf_exempt
 def analyze(request):
     if request.method == 'POST':
         video_url = request.POST.get('video_url')
 
-        subprocess.run(
-            ['python', 'main/youtube.py', video_url],
-            capture_output=True,
-            text=True
-        )
+        # 바로 함수 호출
+        output_text = run_analysis(video_url)
 
         return JsonResponse({
-            'output': f"분석 완료: {video_url}"
+            'output': output_text,
+            'result_img': '/static/img/result.png',
+            'timeseries_img': '/static/img/timeseries.png',
+            'wordcloud_img': '/static/img/wordcloud.png',
         })
-
-    return render(request, 'main/home.html')  # GET 요청 시 홈으로
+    return JsonResponse({'error': 'Invalid request'}, status=400)
