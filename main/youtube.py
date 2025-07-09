@@ -12,7 +12,7 @@ from konlpy.tag import Okt
 # -----------------------
 # 1. API 키 입력
 # -----------------------
-API_KEY = 'AIzaSyABwwARZN_kd22JuDxyHcRySU1FCm3zdCY'
+API_KEY = ''
 
 # -----------------------
 # 2. video_id 추출 함수
