@@ -1,0 +1,54 @@
+<!-- result.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>분석 결과</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <h2>감정 분포 파이차트</h2>
+  <canvas id="pieChart"></canvas>
+
+  <h2>워드클라우드</h2>
+  <img src="data:image/png;base64,{{ wordcloud_base64 }}" alt="Word Cloud">
+
+  <h2>시간 순 감정 추이</h2>
+  <canvas id="lineChart"></canvas>
+
+  {% if error %}
+    <p>{{ error }}</p>
+  {% endif %}
+
+  <script>
+    const sentimentCounts = {{ sentiment_counts|safe }};
+    const pieCtx = document.getElementById('pieChart').getContext('2d');
+    new Chart(pieCtx, {
+      type: 'pie',
+      data: {
+        labels: Object.keys(sentimentCounts),
+        datasets: [{
+          data: Object.values(sentimentCounts)
+        }]
+      }
+    });
+
+    const timeSentiment = {{ time_sentiment|safe }};
+    const labels = timeSentiment.date;
+    const datasets = Object.keys(timeSentiment).filter(k => k !== 'date').map(sent => ({
+      label: sent,
+      data: timeSentiment[sent],
+      fill: false
+    }));
+
+    const lineCtx = document.getElementById('lineChart').getContext('2d');
+    new Chart(lineCtx, {
+      type: 'line',
+      data: {
+        labels: labels,
+        datasets: datasets
+      }
+    });
+  </script>
+</body>
+</html>
